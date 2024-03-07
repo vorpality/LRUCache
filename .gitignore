@@ -1,5 +1,9 @@
 # Compiled class file
+/bin
 *.class
+
+#data
+/datasets
 
 # Log file
 *.log
