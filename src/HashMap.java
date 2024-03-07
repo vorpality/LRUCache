@@ -1,16 +1,3 @@
-//HashNode
-class HashNode<K,V> {
-  
-  K key;
-  V value;
-  HashNode <K,V> next;
-
-  //HashNode constructor
-  public HashNode(K key, V value) {
-    this.key = key;
-    this.value = value;
-  }
-}
 
 //HashMap for storing the values 
 /*
@@ -19,17 +6,22 @@ class HashNode<K,V> {
   The way this is done is via buckets, every hashnode is basically a single linked list which we can traverse 
   like we would a list (node.next)
 */
+
 class HashMap<K, V> {
-  // Array of nodes
+
+  //debugging variables 
   private long operations=0;
-  private HashNode<K, V>[] node_list;
+
+  // Array of nodes
+  private Bucket<K, V>[] node_list;
+  
   private int capacity;
   private int size;
 
 //constructor, capacity represents the cache maximum size
   public HashMap(int capacity) {
     this.capacity = capacity;
-    this.node_list = new HashNode[capacity];
+    this.node_list = new List[capacity];
     this.size = 0;
   }
 
@@ -40,7 +32,7 @@ class HashMap<K, V> {
 
   public void put(K key, V value) {
     int bucketIndex = getBucketIndex(key);
-    HashNode<K, V> head = node_list[bucketIndex];
+    List<K, V> head = node_list[bucketIndex];
 
     while (head != null) {
       operations++;
@@ -53,14 +45,14 @@ class HashMap<K, V> {
 
     size++;
     head = node_list[bucketIndex];
-    HashNode<K, V> newNode = new HashNode<K, V>(key, value);
+    List<K, V> newNode = new List<K, V>(key, value);
     newNode.next = head;
     node_list[bucketIndex] = newNode;
   }
 
   public V get(K key) {
     int bucketIndex = getBucketIndex(key);
-    HashNode<K, V> head = node_list[bucketIndex];
+    List<K, V> head = node_list[bucketIndex];
 
     while (head != null) {
       operations++;
@@ -78,11 +70,13 @@ class HashMap<K, V> {
   }
 
   public V remove(K key) {
-    int bucketIndex = getBucketIndex(key);
-    HashNode<K, V> head = node_list[bucketIndex];
-    HashNode<K, V> prev = null;
 
-    // Search for the key in its linked list ("chain")
+    //Find the bucket that would contain the key
+    int bucketIndex = getBucketIndex(key);
+    List<K, V> head = node_list[bucketIndex];
+    List<K, V> prev = null;
+
+    // Search for the key the respective bucket
     while (head != null) {
         if (head.key.equals(key))
             break;
@@ -91,17 +85,13 @@ class HashMap<K, V> {
         head = head.next;
     }
 
-    // If the key was not found
     if (head == null) return null;
 
-    // Reduce the size of the hashmap
+    // Remove 
     size--;
-
-    // Remove the node
     if (prev != null) {
-        prev.next = head.next; // Bypass the head node if it's not at the start
+        prev.next = head.next;
     } else {
-        // Move the bucket's head to the next node
         node_list[bucketIndex] = head.next;
     }
 
@@ -110,7 +100,7 @@ class HashMap<K, V> {
 
 public boolean containsKey(K key) {
     int bucketIndex = getBucketIndex(key);
-    HashNode<K, V> head = node_list[bucketIndex];
+    List<K, V> head = node_list[bucketIndex];
     while (head != null) {
         if (head.key.equals(key)) {
             return true;
@@ -120,16 +110,17 @@ public boolean containsKey(K key) {
     return false;
 }
 
+//Debugging
 public void printBucketList() {
     System.out.println("HashMap Bucket Distribution:");
     for (int i = 0; i < node_list.length; i++) {
         System.out.print("Bucket " + i + ": ");
-        HashNode<K, V> head = node_list[i];
+        List<K, V> head = node_list[i];
         while (head != null) {
-            System.out.print("(" + head.key + ", " + head.value + ") ");
+            System.out.print(head.key + " : " + head.value + " || ");
             head = head.next;
         }
-        System.out.println(); // Move to the next line after printing all nodes in the bucket
+        System.out.println();
     }
 }
 
