@@ -118,8 +118,7 @@ If key doens't exist, counts a miss
       return this.hits + this.misses;
   }
 
-	@Override
-  public void printBucketList() { this.map.printBucketList();}
+
   @Override
   public void printOperations() { this.map.printOperations();}
   @Override 

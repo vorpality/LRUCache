@@ -24,7 +24,6 @@ public class BucketNode<K,V> {
 
   public void setValue(V value){
     this.value = value;
-    this.reference.renewTimestamp();
   }
 }
 

@@ -43,6 +43,5 @@ public interface Cache<K, V> {
 	public long getNumberOfLookUps();
 	
 	public void printOperations();
-	public void printBucketList();
 	public long getOperationTime();
 }
