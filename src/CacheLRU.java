@@ -1,4 +1,4 @@
-class CacheLRU<K, V> implements Cache<K,V> {
+class CacheLRU<K extends Comparable<K>, V> implements Cache<K,V> {
   private final int capacity;
   private HashMap<K, Node> map;
   private Node head, tail;

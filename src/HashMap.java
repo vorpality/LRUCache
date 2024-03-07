@@ -7,8 +7,8 @@
   like we would a list (node.next)
 */
 
-public class HashMap<K, V> {
-  private HashBucket<K, V>[] buckets;
+public class HashMap<K extends Comparable<K>, V> {
+  private BSTBucket<K, V>[] buckets;
   private int capacity;
   private int size;
   private long operations = 0;
@@ -16,12 +16,11 @@ public class HashMap<K, V> {
   public HashMap(int capacity) {
     this.capacity = capacity;
     this.size = 0;
-    this.buckets = new HashBucket[capacity];
-  }
+this.buckets = (BSTBucket<K, V>[]) new BSTBucket[capacity];  }
 
-  private HashBucket<K, V> getBucket(int bucketIndex) {
+  private BSTBucket<K, V> getBucket(int bucketIndex) {
     if (buckets[bucketIndex] == null) {
-        buckets[bucketIndex] = new HashBucket<>();
+        buckets[bucketIndex] = new BSTBucket<>();
     }
     return buckets[bucketIndex];
   }
@@ -34,7 +33,7 @@ public class HashMap<K, V> {
 
   public void put(K key, V value) {
     int bucketIndex = getBucketIndex(key);
-    HashBucket<K, V> bucket = getBucket(bucketIndex);
+    BSTBucket<K, V> bucket = getBucket(bucketIndex);
     bucket.add(key, value);
     operations++;
     size++;
@@ -42,17 +41,17 @@ public class HashMap<K, V> {
 
   public V get(K key) {
     int bucketIndex = getBucketIndex(key);
-    HashBucket<K, V> bucket = buckets[bucketIndex];
+    BSTBucket<K, V> bucket = buckets[bucketIndex];
     if (bucket == null) {
       return null;
     }
-    BucketNode<K, V> node = bucket.get(key);
+    BSTNode<K, V> node = bucket.get(key);
     return node != null ? node.getValue() : null;
   }
 
   public void remove(K key) {
     int bucketIndex = getBucketIndex(key);
-    HashBucket<K, V> bucket = buckets[bucketIndex];
+    BSTBucket<K, V> bucket = buckets[bucketIndex];
     if (bucket == null) {
       return;
     }
