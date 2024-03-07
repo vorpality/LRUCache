@@ -1,60 +1,16 @@
 class CacheLRU<K, V> implements Cache<K,V> {
   private final int capacity;
-  private HashMap<K, Node> map;
-  private Node head, tail;
+  private HashMap<K, V> map;
+  private DLL stampList;
   private int hits;
   private int misses;
 
-//Doubly linked list node (for timestamp keeping)
-  class Node {
-    K key;
-    V value;
-    Node previous, next;
-    long timestamp;
-
-//list Node constructor
-    Node(K key, V value) {
-      this.key = key;
-      this.value = value;
-      this.timestamp = System.currentTimeMillis();
-    }
-  }
 
 //constructor capacity is the maximum size of the Cache.
   public CacheLRU(int capacity) {
     this.capacity = capacity;
     this.map = new HashMap<>(capacity);
-  }
-
-//Renew access timestamp(move element to front of the list)
-  private void move_to_head(Node node) {
-    node.timestamp = System.currentTimeMillis();
-    if (head == node) return;
-
-    if (node.previous != null) node.previous.next = node.next;
-    if (node.next != null) node.next.previous = node.previous;
-    if (tail == node) tail = node.previous;
-
-    node.next = head;
-    if (head != null) head.previous = node;
-    head = node;
-    node.previous = null;
-
-    if (tail == null) tail = node;
-  }
-
-//eviction of LRU
-/*
-  If current size > capacity, removes last used key
-*/
-  private void rip() {
-    if (map.size() > capacity) {
-      map.remove(tail.key);
-      if (tail.previous != null) {
-        tail.previous.next = null;
-        tail = tail.previous;
-      }
-    }
+    this.stampList = new DLL();
   }
 
 //add new key to cache
@@ -64,15 +20,17 @@ class CacheLRU<K, V> implements Cache<K,V> {
 */
   @Override
   public void store(K key, V value) {
-    Node node = map.get(key);
+    ListNode<K,V> node = map.get(key);
     if (node == null) {
-      node = new Node(key, value);
-      map.put(key, node);
-      move_to_head(node);
-      rip();
+      if (map.size() == capacity) {
+        map.remove(stampList.removeLRU());
+      }
+      node = map.put(key,value);
+      DLLNode<K,V> stamp = stampList.insert(node);
+      node.setReference(stamp);
     } else {
-      node.value = value;
-      move_to_head(node);
+      node.setValue(value);
+      node.getReference().renewTimestamp();
     }
   }
 
@@ -83,11 +41,11 @@ If key doens't exist, counts a miss
 */
   @Override
   public V lookUp(K key) {
-    Node node = map.get(key);
+    ListNode<K,V> node = map.get(key);
     if (node != null) {
-      move_to_head(node);
+      node.getReference().renewTimestamp();
       this.hits++;
-      return node.value;
+      return node.getValue();
     }
     this.misses++;
     return null;
