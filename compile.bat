@@ -1,0 +1,1 @@
+javac src/DLL/*.java src/List/*.java src/*.java -d ./bin

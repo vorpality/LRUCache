@@ -44,4 +44,5 @@ public interface Cache<K, V> {
 	
 	public void printOperations();
 	public void printBucketList();
+	public long getOperationTime();
 }

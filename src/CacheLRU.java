@@ -5,6 +5,7 @@ class CacheLRU<K, V> implements Cache<K,V> {
   private int hits;
   private int misses;
 
+  private long operationTime = 0;
 
 //constructor capacity is the maximum size of the Cache.
   public CacheLRU(int capacity) {
@@ -41,10 +42,13 @@ If key doens't exist, counts a miss
 */
   @Override
   public V lookUp(K key) {
+    long startTime = System.nanoTime();
     ListNode<K,V> node = map.get(key);
     if (node != null) {
       node.getReference().renewTimestamp();
       this.hits++;
+      long findTime = System.nanoTime() - startTime;
+      this.operationTime += findTime;
       return node.getValue();
     }
     this.misses++;
@@ -78,5 +82,6 @@ If key doens't exist, counts a miss
   @Override
   public void printOperations() { this.map.printOperations();}
 
+  public long getOperationTime() { return this.operationTime; }
 
 }
