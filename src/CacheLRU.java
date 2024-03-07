@@ -5,6 +5,7 @@ class CacheLRU<K, V> implements Cache<K,V> {
   private int hits;
   private int misses;
 
+  private long operationsTime;
 //Doubly linked list node (for timestamp keeping)
   class Node {
     K key;
@@ -83,8 +84,10 @@ If key doens't exist, counts a miss
 */
   @Override
   public V lookUp(K key) {
+    long startTime = System.nanoTime();
     Node node = map.get(key);
     if (node != null) {
+      this.operationsTime += System.nanoTime() - startTime;
       move_to_head(node);
       this.hits++;
       return node.value;
@@ -119,6 +122,7 @@ If key doens't exist, counts a miss
   public void printBucketList() { this.map.printBucketList();}
   @Override
   public void printOperations() { this.map.printOperations();}
-
+  @Override 
+  public long getOperationTime() { return this.operationsTime; }
 
 }
