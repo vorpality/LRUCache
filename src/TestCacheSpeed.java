@@ -6,16 +6,16 @@ public class TestCacheSpeed {
 
 	public static void main(String[] args) throws IOException {
 		
-		int cachesize = 500;
+		int cachesize = 100;
 		//initialize with your cache implementation		
 		Cache<String, String> cache = new CacheLRU<String, String>(cachesize);		
 		
 
 		//give path to the dat file
-		String dataFile = "datasets/dataset-5000/data-5000.dat";
+		String dataFile = "datasets/dataset-1000/data-1000.dat";
 		
 		//give path to the workload file
-		String requestsFile = "datasets/dataset-5000/requests-100000.dat";
+		String requestsFile = "datasets/dataset-1000/requests-10000.dat";
 
 		DataSource dataSource = new DataSource(dataFile);
 		WorkloadReader requestReader = new WorkloadReader(requestsFile);
@@ -47,7 +47,6 @@ public class TestCacheSpeed {
 		System.out.printf("Read %d items in %d ms\n", numberOfRequests,	duration);
 		System.out.printf("Stats: lookups %d, hits %d, hit-ratio %f\n", cache.getNumberOfLookUps(), cache.getHits(), cache.getHitRatio());
 		cache.printOperations();
-
 		requestReader.close();
 	}
 }
