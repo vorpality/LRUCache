@@ -27,7 +27,6 @@ class HashMap<K, V> {
   private HashNode<K, V>[] node_list;
   private int capacity;
   private int size;
-  private int maxBucketSize = 0;
 //constructor, capacity represents the cache maximum size
   public HashMap(int capacity) {
     this.capacity = capacity;
@@ -141,6 +140,7 @@ public void printOperations(){
 }
 
 public void printMaxBucketSize() {
+  int maxBucketSize = 0;
   for (int i = 0; i < node_list.length; i++) {
     if (node_list[i] != null && node_list[i].trailingSize > maxBucketSize)  maxBucketSize = node_list[i].trailingSize;
   }
