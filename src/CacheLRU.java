@@ -1,20 +1,20 @@
 class CacheLRU<K, V> implements Cache<K,V> {
   private final int capacity;
-  private HashMap<K, Node> map;
-  private Node head, tail;
+  private HashMap<K, LinkedValue> map;
+  private LinkedValue head, tail;
   private int hits;
   private int misses;
 
   private long operationsTime;
-//Doubly linked list node (for timestamp keeping)
-  class Node {
+//Doubly linked list node (for timestamp keeping) and keeping node immediate connections
+  class LinkedValue {
     K key;
     V value;
-    Node previous, next;
+    LinkedValue previous, next;
     long timestamp;
 
-//list Node constructor
-    Node(K key, V value) {
+//dllist Node constructor
+    LinkedValue(K key,V value) {
       this.key = key;
       this.value = value;
       this.timestamp = System.currentTimeMillis();
@@ -28,7 +28,7 @@ class CacheLRU<K, V> implements Cache<K,V> {
   }
 
 //Renew access timestamp(move element to front of the list)
-  private void move_to_head(Node node) {
+  private void move_to_head(LinkedValue node) {
     node.timestamp = System.currentTimeMillis();
     if (head == node) return;
 
@@ -65,9 +65,9 @@ class CacheLRU<K, V> implements Cache<K,V> {
 */
   @Override
   public void store(K key, V value) {
-    Node node = map.get(key);
+    LinkedValue node = map.get(key);
     if (node == null) {
-      node = new Node(key, value);
+      node = new LinkedValue(key,value);
       map.put(key, node);
       move_to_head(node);
       rip();
@@ -85,7 +85,7 @@ If key doens't exist, counts a miss
   @Override
   public V lookUp(K key) {
     long startTime = System.nanoTime();
-    Node node = map.get(key);
+    LinkedValue node = map.get(key);
     if (node != null) {
       this.operationsTime += System.nanoTime() - startTime;
       move_to_head(node);
