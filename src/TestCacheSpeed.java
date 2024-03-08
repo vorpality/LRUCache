@@ -46,7 +46,7 @@ public class TestCacheSpeed {
 		
 		System.out.printf("Read %d items in %d ms\n", numberOfRequests,	duration);
 		System.out.printf("Stats: lookups %d, hits %d, hit-ratio %f\n", cache.getNumberOfLookUps(), cache.getHits(), cache.getHitRatio());
-		cache.printOperations();
+		//cache.printOperations();
 		requestReader.close();
 	}
 }

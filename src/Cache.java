@@ -42,7 +42,10 @@ public interface Cache<K, V> {
 	 */
 	public long getNumberOfLookUps();
 	
+	/**
+	 * Prints useful time information.
+	 * (Average lookup speed, average store speed and Maximum bucket size).
+	 * For it to be used, all relevant operations need to be un-commented from CacheLRU.java and HashMap.java.
+	 */
 	public void printOperations();
-	public void printBucketList();
-	public long getOperationTime();
 }
