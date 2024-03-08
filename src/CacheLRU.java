@@ -130,6 +130,7 @@ If key doens't exist, counts a miss
   public void printOperations() { 
     System.out.println(" Avg find speed : " + lookupTime/getNumberOfLookUps() +" ns");
     System.out.println(" Avg store speed : " + storeTime/storeCounter + " ns");
+    map.printMaxBucketSize();
   }
   @Override 
   public long getOperationTime() { return this.lookupTime; }

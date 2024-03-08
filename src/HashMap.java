@@ -3,12 +3,14 @@ class HashNode<K,V> {
   
   K key;
   V value;
+  int trailingSize;
   HashNode <K,V> next;
 
   //HashNode constructor
   public HashNode(K key, V value) {
     this.key = key;
     this.value = value;
+    this.trailingSize = 0;
   }
 }
 
@@ -25,7 +27,7 @@ class HashMap<K, V> {
   private HashNode<K, V>[] node_list;
   private int capacity;
   private int size;
-
+  private int maxBucketSize = 0;
 //constructor, capacity represents the cache maximum size
   public HashMap(int capacity) {
     this.capacity = capacity;
@@ -43,18 +45,19 @@ class HashMap<K, V> {
     HashNode<K, V> head = node_list[bucketIndex];
 
     while (head != null) {
-      operations++;
       if (head.key.equals(key)) {
         head.value = value;
         return;
       }
       head = head.next;
+     
     }
 
     size++;
     head = node_list[bucketIndex];
     HashNode<K, V> newNode = new HashNode<K, V>(key, value);
     newNode.next = head;
+    if (head != null) newNode.trailingSize = head.trailingSize+1 ;
     node_list[bucketIndex] = newNode;
   }
 
@@ -137,4 +140,10 @@ public void printOperations(){
   System.out.println("operations : " + operations);
 }
 
+public void printMaxBucketSize() {
+  for (int i = 0; i < node_list.length; i++) {
+    if (node_list[i] != null && node_list[i].trailingSize > maxBucketSize)  maxBucketSize = node_list[i].trailingSize;
+  }
+  System.out.println("Max bucket size is : " + maxBucketSize + " elements.");
+}
 }
