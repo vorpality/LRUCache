@@ -5,7 +5,9 @@ class CacheLRU<K, V> implements Cache<K,V> {
   private int hits;
   private int misses;
 
-  private long operationsTime;
+  private long lookupTime=0;
+  private long storeTime=0;
+  private int storeCounter = 0;
 //Doubly linked list node (for timestamp keeping) and keeping node immediate connections
   class LinkedValue {
     K key;
@@ -65,6 +67,8 @@ class CacheLRU<K, V> implements Cache<K,V> {
 */
   @Override
   public void store(K key, V value) {
+    storeCounter ++;
+    storeTime -= System.nanoTime();
     LinkedValue node = map.get(key);
     if (node == null) {
       node = new LinkedValue(key,value);
@@ -75,6 +79,7 @@ class CacheLRU<K, V> implements Cache<K,V> {
       node.value = value;
       move_to_head(node);
     }
+    storeTime+=System.nanoTime();
   }
 
 //find key in cache 
@@ -84,14 +89,15 @@ If key doens't exist, counts a miss
 */
   @Override
   public V lookUp(K key) {
-    long startTime = System.nanoTime();
+    lookupTime -= System.nanoTime();
     LinkedValue node = map.get(key);
     if (node != null) {
-      this.operationsTime += System.nanoTime() - startTime;
+      this.lookupTime += System.nanoTime();
       move_to_head(node);
       this.hits++;
       return node.value;
     }
+    this.lookupTime += System.nanoTime();
     this.misses++;
     return null;
   }
@@ -121,8 +127,11 @@ If key doens't exist, counts a miss
 	@Override
   public void printBucketList() { this.map.printBucketList();}
   @Override
-  public void printOperations() { this.map.printOperations();}
+  public void printOperations() { 
+    System.out.println(" Avg find speed : " + lookupTime/getNumberOfLookUps() +" ns");
+    System.out.println(" Avg store speed : " + storeTime/storeCounter + " ns");
+  }
   @Override 
-  public long getOperationTime() { return this.operationsTime; }
+  public long getOperationTime() { return this.lookupTime; }
 
 }
