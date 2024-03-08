@@ -86,6 +86,7 @@ If key doens't exist, counts a miss
   public V lookUp(K key) {
     long startTime = System.nanoTime();
     LinkedValue node = map.get(key);
+    System.out.println(node == null);
     if (node != null) {
       this.operationsTime += System.nanoTime() - startTime;
       move_to_head(node);
@@ -118,11 +119,5 @@ If key doens't exist, counts a miss
       return this.hits + this.misses;
   }
 
-	@Override
-  public void printBucketList() { this.map.printBucketList();}
-  @Override
-  public void printOperations() { this.map.printOperations();}
-  @Override 
-  public long getOperationTime() { return this.operationsTime; }
 
 }

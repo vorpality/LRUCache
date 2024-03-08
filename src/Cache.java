@@ -41,8 +41,5 @@ public interface Cache<K, V> {
 	 * Returns the total number of lookups performed by this cache 
 	 */
 	public long getNumberOfLookUps();
-	
-	public void printOperations();
-	public void printBucketList();
-	public long getOperationTime();
+
 }

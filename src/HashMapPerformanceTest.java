@@ -32,6 +32,5 @@ public class HashMapPerformanceTest {
         System.out.println("Cache hits: " + hits);
         System.out.println("Cache misses: " + (numberOfAccesses - hits));
         System.out.println("Hit ratio: " + ((double) hits / numberOfAccesses));
-        cache.printOperations();
     }
 }

@@ -3,7 +3,6 @@ class HashNode<K,V> {
   
   K key;
   V value;
-  HashNode <K,V> next;
 
   //HashNode constructor
   public HashNode(K key, V value) {
@@ -22,119 +21,88 @@ class HashNode<K,V> {
 class HashMap<K, V> {
   // Array of nodes
   private long operations=0;
-  private HashNode<K, V>[] node_list;
+  private HashNode<K, V>[] table;
   private int capacity;
   private int size;
+  private final HashNode<K, V> DELETED = new HashNode<>(null, null);
 
 //constructor, capacity represents the cache maximum size
   public HashMap(int capacity) {
     this.capacity = capacity;
-    this.node_list = new HashNode[capacity];
+    this.table = new HashNode[capacity];
     this.size = 0;
   }
 
-  private int getBucketIndex(K key) {
-    int hashCode = key.hashCode() % this.capacity;
-    return hashCode;
+  private int getBucketIndex(K key, int probe) {
+      return (key.hashCode() + probe) % capacity;
   }
 
   public void put(K key, V value) {
-    int bucketIndex = getBucketIndex(key);
-    HashNode<K, V> head = node_list[bucketIndex];
-
-    while (head != null) {
-      operations++;
-      if (head.key.equals(key)) {
-        head.value = value;
-        return;
-      }
-      head = head.next;
+    int probe = 0;
+    int bucketIndex = getBucketIndex(key, probe);
+    while (table[bucketIndex] != null && table[bucketIndex] != DELETED && !table[bucketIndex].key.equals(key) && probe == 100) {
+      probe++;
+      bucketIndex = getBucketIndex(key, probe);
     }
-
-    size++;
-    head = node_list[bucketIndex];
-    HashNode<K, V> newNode = new HashNode<K, V>(key, value);
-    newNode.next = head;
-    node_list[bucketIndex] = newNode;
+    System.out.println("x");
+    System.out.println(bucketIndex);
+    if (table[bucketIndex] == null || table[bucketIndex] == DELETED || !table[bucketIndex].key.equals(key)) {
+      table[bucketIndex] = new HashNode<>(key, value);
+      size++;
+    } else {
+      table[bucketIndex].value = value;
+    }
   }
 
   public V get(K key) {
-    int bucketIndex = getBucketIndex(key);
-    HashNode<K, V> head = node_list[bucketIndex];
-
-    while (head != null) {
-      operations++;
-      if (head.key.equals(key)) {
-        return head.value;
+    int probe = 0;
+    int bucketIndex = getBucketIndex(key, probe);
+    while (table[bucketIndex] != null && probe < capacity) {
+      if (table[bucketIndex] != DELETED && table[bucketIndex].key.equals(key)) {
+        return table[bucketIndex].value;
       }
-      head = head.next;
+      probe++;
+      bucketIndex = getBucketIndex(key, probe);
     }
-
     return null;
   }
 
-  public int size() {
-    return this.size;
+
+
+  public void remove(K key) {
+      int probe = 0;
+      int bucketIndex = getBucketIndex(key, probe);
+      while (table[bucketIndex] != null && probe < capacity) {
+          if (table[bucketIndex] != DELETED && table[bucketIndex].key.equals(key)) {
+              table[bucketIndex] = DELETED;
+              size--;
+              return;
+          }
+          probe++;
+          bucketIndex = getBucketIndex(key, probe);
+      }
   }
 
-  public V remove(K key) {
-    int bucketIndex = getBucketIndex(key);
-    HashNode<K, V> head = node_list[bucketIndex];
-    HashNode<K, V> prev = null;
-
-    // Search for the key in its linked list ("chain")
-    while (head != null) {
-        if (head.key.equals(key))
-            break;
-
-        prev = head;
-        head = head.next;
-    }
-
-    // If the key was not found
-    if (head == null) return null;
-
-    // Reduce the size of the hashmap
-    size--;
-
-    // Remove the node
-    if (prev != null) {
-        prev.next = head.next; // Bypass the head node if it's not at the start
-    } else {
-        // Move the bucket's head to the next node
-        node_list[bucketIndex] = head.next;
-    }
-
-    return head.value;
-}
 
 public boolean containsKey(K key) {
-    int bucketIndex = getBucketIndex(key);
-    HashNode<K, V> head = node_list[bucketIndex];
-    while (head != null) {
-        if (head.key.equals(key)) {
-            return true;
-        }
-        head = head.next;
+  int probe = 0;
+  int bucketIndex = getBucketIndex(key, probe);
+  while (table[bucketIndex] != null && probe < capacity) {
+    // If we find a non-deleted entry with the matching key, return true
+    if (table[bucketIndex] != DELETED && table[bucketIndex].key.equals(key)) {
+        return true;
     }
-    return false;
+    probe++;
+    bucketIndex = getBucketIndex(key, probe);
+  }
+  // If we exhaust the table without finding the key, or find a null (indicating the end of a probe sequence), return false
+  return false;
 }
 
-public void printBucketList() {
-    System.out.println("HashMap Bucket Distribution:");
-    for (int i = 0; i < node_list.length; i++) {
-        System.out.print("Bucket " + i + ": ");
-        HashNode<K, V> head = node_list[i];
-        while (head != null) {
-            System.out.print("(" + head.key + ", " + head.value + ") ");
-            head = head.next;
-        }
-        System.out.println(); // Move to the next line after printing all nodes in the bucket
-    }
+
+public int size() {
+  return this.size;
 }
 
-public void printOperations(){
-  System.out.println("operations : " + operations);
-}
 
 }
