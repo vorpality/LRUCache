@@ -5,7 +5,9 @@ class CacheLRU<K extends Comparable<K>, V> implements Cache<K,V> {
   private int hits;
   private int misses;
 
-  private long operationsTime;
+  private long lookupTime=0;
+  private long storeTime =0;
+  private int storeCounter = 0;
 //Doubly linked list node (for timestamp keeping)
   class Node {
     K key;
@@ -65,6 +67,8 @@ class CacheLRU<K extends Comparable<K>, V> implements Cache<K,V> {
 */
   @Override
   public void store(K key, V value) {
+    storeTime -= System.nanoTime();
+    storeCounter ++;
     Node node = map.get(key);
     if (node == null) {
       node = new Node(key, value);
@@ -75,6 +79,7 @@ class CacheLRU<K extends Comparable<K>, V> implements Cache<K,V> {
       node.value = value;
       move_to_head(node);
     }
+    storeTime += System.nanoTime();
   }
 
 //find key in cache 
@@ -84,15 +89,16 @@ If key doens't exist, counts a miss
 */
   @Override
   public V lookUp(K key) {
-    long startTime = System.nanoTime();
+    lookupTime -= System.nanoTime();
     Node node = map.get(key);
     if (node != null) {
-      this.operationsTime += System.nanoTime() - startTime;
       move_to_head(node);
       this.hits++;
+      lookupTime += System.nanoTime();
       return node.value;
     }
     this.misses++;
+    lookupTime += System.nanoTime();
     return null;
   }
 
@@ -118,10 +124,10 @@ If key doens't exist, counts a miss
       return this.hits + this.misses;
   }
 
-
   @Override
-  public void printOperations() { this.map.printOperations();}
-  @Override 
-  public long getOperationTime() { return this.operationsTime; }
+  public void printOperations() { 
+    System.out.println("Avg lookup speed : " + this.lookupTime/getNumberOfLookUps() + " ns");
+    System.out.println("Avg store speed : " + this.storeTime/this.storeCounter + " ns");
+  }
 
 }

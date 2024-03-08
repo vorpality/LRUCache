@@ -43,5 +43,4 @@ public interface Cache<K, V> {
 	public long getNumberOfLookUps();
 	
 	public void printOperations();
-	public long getOperationTime();
 }
