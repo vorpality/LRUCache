@@ -5,7 +5,7 @@ class CacheLRU<K, V> implements Cache<K,V> {
   private int hits;
   private int misses;
 
-  private long operationsTime;
+  private long operationsTime = 0;
 //Doubly linked list node (for timestamp keeping) and keeping node immediate connections
   class LinkedValue {
     K key;
@@ -84,15 +84,15 @@ If key doens't exist, counts a miss
 */
   @Override
   public V lookUp(K key) {
-    long startTime = System.nanoTime();
+    operationsTime -= System.nanoTime(); 
     LinkedValue node = map.get(key);
-    System.out.println(node == null);
     if (node != null) {
-      this.operationsTime += System.nanoTime() - startTime;
+      this.operationsTime += System.nanoTime();
       move_to_head(node);
       this.hits++;
       return node.value;
     }
+    this.operationsTime += System.nanoTime();
     this.misses++;
     return null;
   }
@@ -116,6 +116,7 @@ If key doens't exist, counts a miss
 
   @Override
   public long getNumberOfLookUps(){
+    System.out.println("Avg time for lookup : " + operationsTime/(this.hits + this.misses) + " ns");
       return this.hits + this.misses;
   }
 

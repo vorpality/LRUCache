@@ -40,12 +40,10 @@ class HashMap<K, V> {
   public void put(K key, V value) {
     int probe = 0;
     int bucketIndex = getBucketIndex(key, probe);
-    while (table[bucketIndex] != null && table[bucketIndex] != DELETED && !table[bucketIndex].key.equals(key) && probe == 100) {
+    while (table[bucketIndex] != null && table[bucketIndex] != DELETED && !table[bucketIndex].key.equals(key) && probe <= 100) {
       probe++;
       bucketIndex = getBucketIndex(key, probe);
     }
-    System.out.println("x");
-    System.out.println(bucketIndex);
     if (table[bucketIndex] == null || table[bucketIndex] == DELETED || !table[bucketIndex].key.equals(key)) {
       table[bucketIndex] = new HashNode<>(key, value);
       size++;
