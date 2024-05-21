@@ -27,3 +27,5 @@ replay_pid*
 
 # Data
 /datasets
+*.pdf
+*/docx
